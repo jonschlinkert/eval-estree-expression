@@ -1,0 +1,18 @@
+{
+  "name": "expressions",
+  "description": "Node.js library and API for expressions",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "mocha --recursive --ignore 'test/fixtures/**'",
+    "test:ci": "nyc --reporter=lcov npm run test",
+    "cover": "nyc --reporter=text --reporter=html npm run test"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.14.7"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.2",
+    "nyc": "^15.1.0"
+  }
+}
