@@ -22,28 +22,17 @@ describe('literals', () => {
   });
 
   it('should evaluate numeric literals', () => {
-    assert.equal(e.sync('1 === 2'), false);
-    assert.equal(e.sync('1 == 2'), false);
-
-    assert.equal(e.sync('1 !== 2'), true);
-    assert.equal(e.sync('1 != 2'), true);
-
-    assert.equal(e.sync('1 === 1'), true);
-    assert.equal(e.sync('1 == 1'), true);
-
-    assert.equal(e.sync('1 !== 1'), false);
-    assert.equal(e.sync('1 != 1'), false);
+    assert.equal(e.sync('1'), 1);
+    assert.equal(e.sync('2e3'), 2e3);
+    assert.equal(e.sync('2.1'), 2.1);
+    assert.equal(e.sync('2.1e2'), 210);
+    assert.equal(e.sync('-2.1e2'), -210);
   });
 
   it('should evaluate string literals', () => {
-    assert.equal(e.sync('"one" === "two"'), false);
-    assert.equal(e.sync('"one" == "two"'), false);
-
-    assert.equal(e.sync('"" === ""'), true);
-    assert.equal(e.sync('"" == ""'), true);
-
-    assert.equal(e.sync('"one" !== "two"'), true);
-    assert.equal(e.sync('"one" != "two"'), true);
+    assert.equal(e.sync('"one"'), 'one');
+    assert.equal(e.sync('"two"'), 'two');
+    assert.equal(e.sync('"it\'s a sentence"'), 'it\'s a sentence');
   });
 
   it('should evaluate template literals', () => {

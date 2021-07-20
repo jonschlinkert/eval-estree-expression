@@ -22,28 +22,17 @@ describe('literals', () => {
   });
 
   it('should evaluate numeric literals', async () => {
-    assert.equal(await e('1 === 2'), false);
-    assert.equal(await e('1 == 2'), false);
-
-    assert.equal(await e('1 !== 2'), true);
-    assert.equal(await e('1 != 2'), true);
-
-    assert.equal(await e('1 === 1'), true);
-    assert.equal(await e('1 == 1'), true);
-
-    assert.equal(await e('1 !== 1'), false);
-    assert.equal(await e('1 != 1'), false);
+    assert.equal(await e('1'), 1);
+    assert.equal(await e('2e3'), 2e3);
+    assert.equal(await e('2.1'), 2.1);
+    assert.equal(await e('2.1e2'), 210);
+    assert.equal(await e('-2.1e2'), -210);
   });
 
   it('should evaluate string literals', async () => {
-    assert.equal(await e('"one" === "two"'), false);
-    assert.equal(await e('"one" == "two"'), false);
-
-    assert.equal(await e('"" === ""'), true);
-    assert.equal(await e('"" == ""'), true);
-
-    assert.equal(await e('"one" !== "two"'), true);
-    assert.equal(await e('"one" != "two"'), true);
+    assert.equal(await e('"one"'), 'one');
+    assert.equal(await e('"two"'), 'two');
+    assert.equal(await e('"it\'s a sentence"'), 'it\'s a sentence');
   });
 
   it('should evaluate template literals', async () => {

@@ -1,7 +1,8 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { evaluate: e } = require('../..');
+const expression = require('../..');
+const { evaluate: e } = expression;
 
 describe('operators', () => {
   it('should evaluate grouping operators', async () => {
@@ -13,29 +14,29 @@ describe('operators', () => {
 
   describe('increment and decrement operators', () => {
     it('should evaluate increment prefix operator', async () => {
-      assert.equal(await e('++a', { a: 1 }), 2);
-      assert.equal(await e('++a', { a: -1 }), 0);
+      assert.equal(await e('++a', { a: Promise.resolve(1) }), 2);
+      assert.equal(await e('++a', { a: Promise.resolve(-1) }), 0);
     });
 
     it('should evaluate increment postfix operator', async () => {
-      assert.equal(await e('a++', { a: 1 }), 2);
-      assert.equal(await e('a++', { a: -1 }), 0);
+      assert.equal(await e('a++', { a: Promise.resolve(1) }), 2);
+      assert.equal(await e('a++', { a: Promise.resolve(-1) }), 0);
     });
 
     it('should evaluate decrement prefix operator', async () => {
-      assert.equal(await e('--a', { a: 1 }), 0);
-      assert.equal(await e('--a', { a: 0 }), -1);
+      assert.equal(await e('--a', { a: Promise.resolve(1) }), 0);
+      assert.equal(await e('--a', { a: Promise.resolve(0) }), -1);
     });
 
     it('should evaluate decrement postfix operator', async () => {
-      assert.equal(await e('a--', { a: 1 }), 0);
-      assert.equal(await e('a--', { a: 0 }), -1);
+      assert.equal(await e('a--', { a: Promise.resolve(1) }), 0);
+      assert.equal(await e('a--', { a: Promise.resolve(0) }), -1);
     });
   });
 
   describe('unary operators', () => {
     it('should evaluate delete', async () => {
-      const context = { obj: { a: 1, b: 2 } };
+      const context = { obj: Promise.resolve({ a: 1, b: 2 }) };
       await e('delete obj.b', context);
       assert.deepEqual(context, { obj: { a: 1 } });
     });
@@ -60,28 +61,28 @@ describe('operators', () => {
     });
 
     it('should evaluate ~', async () => {
-      assert.equal(await e('~a', { a: 5, b: -3 }), -6);
-      assert.equal(await e('~b', { a: 5, b: -3 }), 2);
+      assert.equal(await e('~a', { a: Promise.resolve(5) }), -6);
+      assert.equal(await e('~a', { a: Promise.resolve(-3) }), 2);
     });
 
     it('should evaluate !', async () => {
-      assert.equal(await e('!a', { a: 5, b: -3 }), false);
-      assert.equal(await e('!b', { a: 5, b: -3 }), false);
-      assert.equal(await e('!b', { a: 5, b: 0 }), true);
-      assert.equal(await e('!b', { a: 5, b: false }), true);
+      assert.equal(await e('!a', { a: Promise.resolve(-3) }), false);
+      assert.equal(await e('!a', { a: Promise.resolve(-3) }), false);
+      assert.equal(await e('!a', { a: Promise.resolve(0) }), true);
+      assert.equal(await e('!a', { a: Promise.resolve(false) }), true);
 
-      assert.equal(await e('!!a', { a: 5, b: -3 }), true);
-      assert.equal(await e('!!b', { a: 5, b: -3 }), true);
-      assert.equal(await e('!!b', { a: 5, b: 0 }), false);
-      assert.equal(await e('!!b', { a: 5, b: false }), false);
+      assert.equal(await e('!!a', { a: Promise.resolve(-3) }), true);
+      assert.equal(await e('!!a', { a: Promise.resolve(-3) }), true);
+      assert.equal(await e('!!a', { a: Promise.resolve(0) }), false);
+      assert.equal(await e('!!a', { a: Promise.resolve(false) }), false);
     });
   });
 
   describe('arithmetic operators', () => {
     it('should evaluate +', async () => {
       assert.equal(await e('1 + 1'), 2);
-      assert.equal(await e('1 + a', { a: 1 }), 2);
-      assert.equal(await e('a + b', { a: 1, b: 9 }), 10);
+      assert.equal(await e('1 + a', { a: Promise.resolve(1) }), 2);
+      assert.equal(await e('a + b', { a: Promise.resolve(1), b: Promise.resolve(9) }), 10);
     });
 
     it('should evaluate -', async () => {
@@ -117,7 +118,7 @@ describe('operators', () => {
     it('should evaluate in', async () => {
       assert.equal(await e('"a" in ["a", "b"]'), false);
       assert.equal(await e('"a" in { a: "b" }'), true);
-      assert.equal(await e('"a" in obj', { obj: { a: 'b' } }), true);
+      assert.equal(await e('"a" in obj', { obj: Promise.resolve({ a: 'b' }) }), true);
     });
 
     it('should evaluate instanceof', async () => {
@@ -160,11 +161,16 @@ describe('operators', () => {
       assert.equal(await e('v !== undefined'), false);
       assert.equal(await e('5 !== 2'), true);
       assert.equal(await e('7 !== 7'), false);
+      assert.equal(await e('1 !== 2'), true);
+      assert.equal(await e('1 !== 1'), false);
       assert.equal(await e('a !== b', { a: 1, b: 2 }), true);
       assert.equal(await e('a !== b', { a: 2, b: 2 }), false);
+      assert.equal(await e('"one" !== "two"'), true);
     });
 
     it('should evaluate ===', async () => {
+      assert.equal(await e('"" === ""'), true);
+      assert.equal(await e('"one" === "two"'), false);
       assert.equal(await e('v === undefined', { v: null }), false);
       assert.equal(await e('v === undefined', { v: undefined }), true);
       assert.equal(await e('v === undefined', { v: 1, undefined: 1 }), false);
@@ -177,6 +183,8 @@ describe('operators', () => {
 
       assert.equal(await e('undefined === null'), false);
       assert.equal(await e('5 === 2'), false);
+      assert.equal(await e('1 === 2'), false);
+      assert.equal(await e('1 === 1'), true);
       assert.equal(await e('7 === 7'), true);
       assert.equal(await e('a === b', { a: 1, b: 2 }), false);
       assert.equal(await e('a === b', { a: 2, b: 2 }), true);
@@ -185,8 +193,11 @@ describe('operators', () => {
     it('should evaluate !=', async () => {
       assert.equal(await e('5 != 2'), true);
       assert.equal(await e('7 != "7"'), false);
+      assert.equal(await e('1 != 2'), true);
+      assert.equal(await e('1 != 1'), false);
       assert.equal(await e('a != b', { a: 1, b: '2' }), true);
       assert.equal(await e('a != b', { a: 2, b: '2' }), false);
+      assert.equal(await e('"one" != "two"'), true);
     });
 
     it('should evaluate ==', async () => {
@@ -194,8 +205,12 @@ describe('operators', () => {
       assert.equal(await e('"1" == 1'), true);
       assert.equal(await e('5 == 2'), false);
       assert.equal(await e('7 == "7"'), true);
-      assert.equal(await e('a == b', { a: 1, b: '2' }), false);
-      assert.equal(await e('a == b', { a: 2, b: '2' }), true);
+      assert.equal(await e('1 == 2'), false);
+      assert.equal(await e('1 == 1'), true);
+      assert.equal(await e('a == b', { a: Promise.resolve(1), b: '2' }), false);
+      assert.equal(await e('a == b', { a: Promise.resolve(2), b: '2' }), true);
+      assert.equal(await e('"one" == "two"'), false);
+      assert.equal(await e('"" == ""'), true);
     });
   });
 
@@ -289,68 +304,68 @@ describe('operators', () => {
   });
 
   describe('assignment operators', () => {
-    it('should evaluate =', async () => {
-      assert.throws(() => e('a = b'), /Assignment expression/);
+    it('should evaluate =', () => {
+      return assert.rejects(() => e('a = b'));
     });
 
-    it('should evaluate *=', async () => {
-      assert.throws(() => e('a *= b'), /Assignment expression/);
+    it('should evaluate *=', () => {
+      return assert.rejects(() => e('a *= b'));
     });
 
-    it('should evaluate **=', async () => {
-      assert.throws(() => e('a **= b'), /Assignment expression/);
+    it('should evaluate **=', () => {
+      return assert.rejects(() => e('a **= b'));
     });
 
-    it('should evaluate /=', async () => {
-      assert.throws(() => e('a /= b'), /Assignment expression/);
+    it('should evaluate /=', () => {
+      return assert.rejects(() => e('a /= b'));
     });
 
-    it('should evaluate %=', async () => {
-      assert.throws(() => e('a %= b'), /Assignment expression/);
+    it('should evaluate %=', () => {
+      return assert.rejects(() => e('a %= b'));
     });
 
-    it('should evaluate +=', async () => {
-      assert.throws(() => e('a += b'), /Assignment expression/);
+    it('should evaluate +=', () => {
+      return assert.rejects(() => e('a += b'));
     });
 
-    it('should evaluate -=', async () => {
-      assert.throws(() => e('a -= b'), /Assignment expression/);
+    it('should evaluate -=', () => {
+      return assert.rejects(() => e('a -= b'));
     });
 
-    it('should evaluate <<=', async () => {
-      assert.throws(() => e('a <<= b'), /Assignment expression/);
+    it('should evaluate <<=', () => {
+      return assert.rejects(() => e('a <<= b'));
     });
 
-    it('should evaluate >>=', async () => {
-      assert.throws(() => e('a >>= b'), /Assignment expression/);
+    it('should evaluate >>=', () => {
+      return assert.rejects(() => e('a >>= b'));
     });
 
-    it('should evaluate >>>=', async () => {
-      assert.throws(() => e('a >>>= b'), /Assignment expression/);
+    it('should evaluate >>>=', () => {
+      return assert.rejects(() => e('a >>>= b'));
     });
 
-    it('should evaluate &=', async () => {
-      assert.throws(() => e('a &= b'), /Assignment expression/);
+    it('should evaluate &=', () => {
+      return assert.rejects(() => e('a &= b'));
     });
 
-    it('should evaluate ^=', async () => {
-      assert.throws(() => e('a ^= b'), /Assignment expression/);
+    it('should evaluate ^=', () => {
+      return assert.rejects(() => e('a ^= b'));
     });
 
-    it('should evaluate |=', async () => {
-      assert.throws(() => e('a |= b'), /Assignment expression/);
+    it('should evaluate |=', () => {
+      return assert.rejects(() => e('a |= b'));
     });
 
-    it('should evaluate &&=', async () => {
-      assert.throws(() => e('a &&= b'), /Assignment expression/);
+    it('should evaluate &&=', () => {
+      return assert.rejects(() => e('a &&= b'));
     });
 
-    it('should evaluate ||=', async () => {
-      assert.throws(() => e('a ||= b'), /Assignment expression/);
+    it('should evaluate ||=', () => {
+      return assert.rejects(() => e('a ||= b'));
     });
 
-    it('should evaluate ??=', async () => {
-      assert.throws(() => e('a ??= b'), /Assignment expression/);
+    it('should evaluate ??=', () => {
+      return assert.rejects(() => e('a ??= b'));
     });
   });
 

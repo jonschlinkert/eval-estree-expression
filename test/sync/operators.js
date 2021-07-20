@@ -40,8 +40,13 @@ describe('operators', () => {
       assert.deepEqual(context, { obj: { a: 1 } });
     });
 
+    it('should throw an error when delete is invalid', () => {
+      assert.throws(() => e.sync('delete obj', { obj: {} }));
+    });
+
     it('should evaluate void', () => {
       assert.equal(e.sync('void 42'), undefined);
+      assert.equal(e.sync('void (42)'), undefined);
     });
 
     it('should evaluate typeof', () => {
@@ -160,11 +165,16 @@ describe('operators', () => {
       assert.equal(e.sync('v !== undefined'), false);
       assert.equal(e.sync('5 !== 2'), true);
       assert.equal(e.sync('7 !== 7'), false);
+      assert.equal(e.sync('1 !== 2'), true);
+      assert.equal(e.sync('1 !== 1'), false);
       assert.equal(e.sync('a !== b', { a: 1, b: 2 }), true);
       assert.equal(e.sync('a !== b', { a: 2, b: 2 }), false);
+      assert.equal(e.sync('"one" !== "two"'), true);
     });
 
     it('should evaluate ===', () => {
+      assert.equal(e.sync('"" === ""'), true);
+      assert.equal(e.sync('"one" === "two"'), false);
       assert.equal(e.sync('v === undefined', { v: null }), false);
       assert.equal(e.sync('v === undefined', { v: undefined }), true);
       assert.equal(e.sync('v === undefined', { v: 1, undefined: 1 }), false);
@@ -177,6 +187,8 @@ describe('operators', () => {
 
       assert.equal(e.sync('undefined === null'), false);
       assert.equal(e.sync('5 === 2'), false);
+      assert.equal(e.sync('1 === 2'), false);
+      assert.equal(e.sync('1 === 1'), true);
       assert.equal(e.sync('7 === 7'), true);
       assert.equal(e.sync('a === b', { a: 1, b: 2 }), false);
       assert.equal(e.sync('a === b', { a: 2, b: 2 }), true);
@@ -185,8 +197,11 @@ describe('operators', () => {
     it('should evaluate !=', () => {
       assert.equal(e.sync('5 != 2'), true);
       assert.equal(e.sync('7 != "7"'), false);
+      assert.equal(e.sync('1 != 2'), true);
+      assert.equal(e.sync('1 != 1'), false);
       assert.equal(e.sync('a != b', { a: 1, b: '2' }), true);
       assert.equal(e.sync('a != b', { a: 2, b: '2' }), false);
+      assert.equal(e.sync('"one" != "two"'), true);
     });
 
     it('should evaluate ==', () => {
@@ -194,8 +209,12 @@ describe('operators', () => {
       assert.equal(e.sync('"1" == 1'), true);
       assert.equal(e.sync('5 == 2'), false);
       assert.equal(e.sync('7 == "7"'), true);
+      assert.equal(e.sync('1 == 2'), false);
+      assert.equal(e.sync('1 == 1'), true);
       assert.equal(e.sync('a == b', { a: 1, b: '2' }), false);
       assert.equal(e.sync('a == b', { a: 2, b: '2' }), true);
+      assert.equal(e.sync('"one" == "two"'), false);
+      assert.equal(e.sync('"" == ""'), true);
     });
   });
 
@@ -290,67 +309,67 @@ describe('operators', () => {
 
   describe('assignment operators', () => {
     it('should evaluate =', () => {
-      assert.throws(() => e('a = b'), /Assignment expression/);
+      assert.throws(() => e.sync('a = b'));
     });
 
     it('should evaluate *=', () => {
-      assert.throws(() => e('a *= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a *= b'));
     });
 
     it('should evaluate **=', () => {
-      assert.throws(() => e('a **= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a **= b'));
     });
 
     it('should evaluate /=', () => {
-      assert.throws(() => e('a /= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a /= b'));
     });
 
     it('should evaluate %=', () => {
-      assert.throws(() => e('a %= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a %= b'));
     });
 
     it('should evaluate +=', () => {
-      assert.throws(() => e('a += b'), /Assignment expression/);
+      assert.throws(() => e.sync('a += b'));
     });
 
     it('should evaluate -=', () => {
-      assert.throws(() => e('a -= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a -= b'));
     });
 
     it('should evaluate <<=', () => {
-      assert.throws(() => e('a <<= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a <<= b'));
     });
 
     it('should evaluate >>=', () => {
-      assert.throws(() => e('a >>= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a >>= b'));
     });
 
     it('should evaluate >>>=', () => {
-      assert.throws(() => e('a >>>= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a >>>= b'));
     });
 
     it('should evaluate &=', () => {
-      assert.throws(() => e('a &= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a &= b'));
     });
 
     it('should evaluate ^=', () => {
-      assert.throws(() => e('a ^= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a ^= b'));
     });
 
     it('should evaluate |=', () => {
-      assert.throws(() => e('a |= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a |= b'));
     });
 
     it('should evaluate &&=', () => {
-      assert.throws(() => e('a &&= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a &&= b'));
     });
 
     it('should evaluate ||=', () => {
-      assert.throws(() => e('a ||= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a ||= b'));
     });
 
     it('should evaluate ??=', () => {
-      assert.throws(() => e('a ??= b'), /Assignment expression/);
+      assert.throws(() => e.sync('a ??= b'));
     });
   });
 
