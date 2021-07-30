@@ -8,10 +8,10 @@
     "test:ci": "nyc --reporter=lcov npm run test",
     "cover": "nyc --reporter=text --reporter=html npm run test"
   },
-  "dependencies": {
-    "@babel/parser": "^7.14.7"
-  },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.14.4",
+    "@babel/eslint-plugin": "^7.13.16",
+    "@babel/parser": "^7.14.7",
     "mocha": "^9.0.2",
     "nyc": "^15.1.0"
   }

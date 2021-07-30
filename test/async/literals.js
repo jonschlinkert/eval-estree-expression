@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { evaluate: e } = require('../..');
+const { evaluate: e } = require('../support');
 
 describe('literals', () => {
   it('should evaluate object literals', async () => {

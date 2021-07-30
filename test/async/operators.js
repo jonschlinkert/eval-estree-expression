@@ -1,8 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const expression = require('../..');
-const { evaluate: e } = expression;
+const { evaluate: e } = require('../support');
 
 describe('operators', () => {
   it('should evaluate grouping operators', async () => {
@@ -369,10 +368,11 @@ describe('operators', () => {
     });
   });
 
-  describe('comma operator', () => {
+  describe('comma operator (sequence expressions)', () => {
     it('should evaluate comma operator', async () => {
       assert.equal(await e('(1, 2, 3)'), 3);
       assert.equal(await e('(a, b, c)', { a: 1, b: 2, c: 10 }), 10);
+      assert.equal(await e('(a++, b, a)', { a: 1, b: 2, c: 10 }), 2);
       assert.equal(await e('((x++, x++, x))', { x: 1 }), 3);
     });
   });

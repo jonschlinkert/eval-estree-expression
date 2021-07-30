@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { evaluate: e } = require('../..');
+const { evaluate: e } = require('../support');
 
 describe('literals', () => {
   it('should evaluate object literals', () => {
@@ -27,6 +27,15 @@ describe('literals', () => {
     assert.equal(e.sync('2.1'), 2.1);
     assert.equal(e.sync('2.1e2'), 210);
     assert.equal(e.sync('-2.1e2'), -210);
+  });
+
+  it('should evaluate BigInt literals', () => {
+    assert.equal(e.sync('1n'), 1n);
+    assert.equal(e.sync('0x1fffffffffffffn'), 9007199254740991n);
+    assert.equal(e.sync('0o377777777777777777n'), 9007199254740991n);
+    assert.equal(e.sync('0b11111111111111111111111111111111111111111111111111111n'), 9007199254740991n);
+    assert.equal(e.sync('2n ** 54n'), 18014398509481984n);
+    // assert.equal(e.sync('BigInt(2n ** 54n) * -1n', {}, { functions: true }), -18014398509481984n);
   });
 
   it('should evaluate string literals', () => {

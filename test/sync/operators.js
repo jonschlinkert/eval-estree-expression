@@ -1,14 +1,16 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { evaluate: e } = require('../..');
+const { evaluate: e } = require('../support');
 
 describe('operators', () => {
-  it('should evaluate grouping operators', () => {
-    assert.equal(e.sync('2 / 1 * 4 / 2'), 4);
-    assert.equal(e.sync('2 / (1 * 4) / 2'), 0.25);
-    assert.equal(e.sync('(2 / 1) + (4 / 2)'), 4);
-    assert.equal(e.sync('2 / (1 + 4) / 2'), 0.2);
+  describe('grouping operators', () => {
+    it('should evaluate grouping operators', () => {
+      assert.equal(e.sync('2 / 1 * 4 / 2'), 4);
+      assert.equal(e.sync('2 / (1 * 4) / 2'), 0.25);
+      assert.equal(e.sync('(2 / 1) + (4 / 2)'), 4);
+      assert.equal(e.sync('2 / (1 + 4) / 2'), 0.2);
+    });
   });
 
   describe('increment and decrement operators', () => {
@@ -79,6 +81,11 @@ describe('operators', () => {
       assert.equal(e.sync('!!b', { a: 5, b: -3 }), true);
       assert.equal(e.sync('!!b', { a: 5, b: 0 }), false);
       assert.equal(e.sync('!!b', { a: 5, b: false }), false);
+
+      assert.equal(e.sync('!!!!!a', { a: 5, b: -3 }), false);
+      assert.equal(e.sync('!!!!!b', { a: 5, b: -3 }), false);
+      assert.equal(e.sync('!!!!!b', { a: 5, b: 0 }), true);
+      assert.equal(e.sync('!!!!!b', { a: 5, b: false }), true);
     });
   });
 
@@ -87,6 +94,7 @@ describe('operators', () => {
       assert.equal(e.sync('1 + 1'), 2);
       assert.equal(e.sync('1 + a', { a: 1 }), 2);
       assert.equal(e.sync('a + b', { a: 1, b: 9 }), 10);
+      assert.equal(e.sync('products.amount * 0.06', { products: { amount: 100 } }), 6);
     });
 
     it('should evaluate -', () => {
@@ -373,10 +381,11 @@ describe('operators', () => {
     });
   });
 
-  describe('comma operator', () => {
+  describe('comma operator (sequence expressions)', () => {
     it('should evaluate comma operator', () => {
       assert.equal(e.sync('(1, 2, 3)'), 3);
       assert.equal(e.sync('(a, b, c)', { a: 1, b: 2, c: 10 }), 10);
+      assert.equal(e.sync('(a++, b, a)', { a: 1, b: 2, c: 10 }), 2);
       assert.equal(e.sync('((x++, x++, x))', { x: 1 }), 3);
     });
   });
