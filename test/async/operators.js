@@ -1,14 +1,16 @@
 'use strict';
 
-const assert = require('assert').strict;
+const assert = require('assert/strict');
 const { evaluate: e } = require('../support');
 
 describe('operators', () => {
-  it('should evaluate grouping operators', async () => {
-    assert.equal(await e('2 / 1 * 4 / 2'), 4);
-    assert.equal(await e('2 / (1 * 4) / 2'), 0.25);
-    assert.equal(await e('(2 / 1) + (4 / 2)'), 4);
-    assert.equal(await e('2 / (1 + 4) / 2'), 0.2);
+  describe('grouping operators', () => {
+    it('should evaluate grouping operators', async () => {
+      assert.equal(await e('2 / 1 * 4 / 2'), 4);
+      assert.equal(await e('2 / (1 * 4) / 2'), 0.25);
+      assert.equal(await e('(2 / 1) + (4 / 2)'), 4);
+      assert.equal(await e('2 / (1 + 4) / 2'), 0.2);
+    });
   });
 
   describe('increment and decrement operators', () => {
@@ -40,8 +42,13 @@ describe('operators', () => {
       assert.deepEqual(context, { obj: { a: 1 } });
     });
 
+    it('should throw an error when delete is invalid', () => {
+      return assert.rejects(() => e('delete obj', { obj: {} }));
+    });
+
     it('should evaluate void', async () => {
       assert.equal(await e('void 42'), undefined);
+      assert.equal(await e('void (42)'), undefined);
     });
 
     it('should evaluate typeof', async () => {
@@ -56,6 +63,8 @@ describe('operators', () => {
 
     it('should evaluate -', async () => {
       assert.equal(await e('-"42"'), -42);
+      assert.equal(await e('-"42n"'), NaN);
+      assert.equal(await e('-42n'), -42n);
       assert.equal(await e('-42'), -42);
     });
 
@@ -74,6 +83,11 @@ describe('operators', () => {
       assert.equal(await e('!!a', { a: Promise.resolve(-3) }), true);
       assert.equal(await e('!!a', { a: Promise.resolve(0) }), false);
       assert.equal(await e('!!a', { a: Promise.resolve(false) }), false);
+
+      assert.equal(await e('!!!!!a', { a: 5, b: -3 }), false);
+      assert.equal(await e('!!!!!b', { a: 5, b: -3 }), false);
+      assert.equal(await e('!!!!!b', { a: 5, b: 0 }), true);
+      assert.equal(await e('!!!!!b', { a: 5, b: false }), true);
     });
   });
 
@@ -82,6 +96,7 @@ describe('operators', () => {
       assert.equal(await e('1 + 1'), 2);
       assert.equal(await e('1 + a', { a: Promise.resolve(1) }), 2);
       assert.equal(await e('a + b', { a: Promise.resolve(1), b: Promise.resolve(9) }), 10);
+      assert.equal(await e('products.amount * 0.06', { products: { amount: 100 } }), 6);
     });
 
     it('should evaluate -', async () => {
@@ -115,7 +130,7 @@ describe('operators', () => {
 
   describe('relational operators', () => {
     it('should evaluate in', async () => {
-      assert.equal(await e('"a" in ["a", "b"]'), false);
+      assert.equal(await e('"a" in ["a", "b"]'), true);
       assert.equal(await e('"a" in { a: "b" }'), true);
       assert.equal(await e('"a" in obj', { obj: Promise.resolve({ a: 'b' }) }), true);
     });
@@ -170,6 +185,7 @@ describe('operators', () => {
     it('should evaluate ===', async () => {
       assert.equal(await e('"" === ""'), true);
       assert.equal(await e('"one" === "two"'), false);
+      assert.equal(await e('v === undefined', { v: 1 }), false);
       assert.equal(await e('v === undefined', { v: null }), false);
       assert.equal(await e('v === undefined', { v: undefined }), true);
       assert.equal(await e('v === undefined', { v: 1, undefined: 1 }), false);
