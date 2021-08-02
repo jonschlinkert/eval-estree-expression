@@ -1,9 +1,23 @@
 'use strict';
 
-const assert = require('assert').strict;
+const assert = require('assert/strict');
 const { evaluate: e } = require('../support');
 
 describe('operators', () => {
+  describe('regex operator', () => {
+    it('should evaluate custom regex operator for matching without functions', () => {
+      assert.ok(e.sync('name =~ /^a.*c$/', { name: 'abc' }));
+      assert.ok(!e.sync('name =~ /^d.*f$/', { name: 'abc' }));
+
+      assert.ok(e.sync('name =~ regex', { name: 'abc', regex: /^a.*c$/ }));
+      assert.ok(!e.sync('name =~ regex', { name: 'abc', regex: /^d.*f$/ }));
+    });
+
+    it('should throw whe regex operator is disabled', () => {
+      assert.throws(() => e.sync('name =~ /^a.*c$/', { name: 'abc' }, { regex_operator: false }));
+    });
+  });
+
   describe('grouping operators', () => {
     it('should evaluate grouping operators', () => {
       assert.equal(e.sync('2 / 1 * 4 / 2'), 4);
@@ -63,6 +77,8 @@ describe('operators', () => {
 
     it('should evaluate -', () => {
       assert.equal(e.sync('-"42"'), -42);
+      assert.equal(e.sync('-"42n"'), NaN);
+      assert.equal(e.sync('-42n'), -42n);
       assert.equal(e.sync('-42'), -42);
     });
 
@@ -128,7 +144,7 @@ describe('operators', () => {
 
   describe('relational operators', () => {
     it('should evaluate in', () => {
-      assert.equal(e.sync('"a" in ["a", "b"]'), false);
+      assert.equal(e.sync('"a" in ["a", "b"]'), true);
       assert.equal(e.sync('"a" in { a: "b" }'), true);
       assert.equal(e.sync('"a" in obj', { obj: { a: 'b' } }), true);
     });
@@ -296,6 +312,52 @@ describe('operators', () => {
       assert.equal(e.sync('"0" ?? "default string"'), '0');
       assert.equal(e.sync('"" ?? "default string"'), '');
       assert.equal(e.sync('false ?? "default string"'), false);
+    });
+  });
+
+  describe('"boolean binary" logical operators', () => {
+    const b = (input, context, options) => e.sync(input, context, { boolean_logical_operators: true, ...options });
+
+    it('should evaluate &&', () => {
+      assert.equal(b('0 && 1'), false);
+      assert.equal(b('1 && 2'), true);
+      assert.equal(b('true && false'), false);
+      assert.equal(b('a > 0 && b > 0', { a: 3, b: -2 }), false);
+      assert.equal(b('true  && true'), true);
+      assert.equal(b('true  && false'), false);
+      assert.equal(b('false && true'), false);
+      assert.equal(b('false && (3 == 4)'),   false);
+      assert.equal(b("'Cat' && 'Dog'"), true);
+      assert.equal(b("false && 'Cat'"), false);
+      assert.equal(b("'Cat' && false"), false);
+      assert.equal(b("''    && false"), false);
+      assert.equal(b("false && ''"), false);
+    });
+
+    it('should evaluate ||', () => {
+      assert.equal(b('true  || true'), true);
+      assert.equal(b('false || true'), true);
+      assert.equal(b('true  || false'), true);
+      assert.equal(b('false || (3 == 4)'), false);
+      assert.equal(b("'Cat' || 'Dog'"), true);
+      assert.equal(b("false || 'Cat'"), true);
+      assert.equal(b("'Cat' || false"), true);
+      assert.equal(b("''    || false"), false);
+      assert.equal(b("false || ''"), false);
+      assert.equal(b('false || val', { val: 'foo' }), true);
+    });
+
+    it('should evaluate ??', () => {
+      assert.equal(b('undefined ?? "default string"'), true);
+      assert.equal(b('null ?? "default string"'), true);
+      assert.equal(b('undefined ?? "default string"'), true);
+      assert.equal(b('false ?? "default string"'), false);
+      assert.equal(b('undefined ?? null'), false);
+      assert.equal(b('undefined ?? undefined'), false);
+      assert.equal(b('0 ?? "default string"'), false);
+      assert.equal(b('"0" ?? "default string"'), true);
+      assert.equal(b('"" ?? "default string"'), false);
+      assert.equal(b('false ?? "default string"'), false);
     });
   });
 

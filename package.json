@@ -1,5 +1,5 @@
 {
-  "name": "expressions",
+  "name": "eval-estree-expression",
   "description": "Node.js library and API for expressions",
   "version": "0.0.0",
   "private": true,
@@ -12,7 +12,25 @@
     "@babel/eslint-parser": "^7.14.4",
     "@babel/eslint-plugin": "^7.13.16",
     "@babel/parser": "^7.14.7",
+    "gulp-format-md": "^2.0.0",
+    "jsep": "github:EricSmekens/jsep",
     "mocha": "^9.0.2",
     "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "escodegen": "^2.0.0"
+  },
+  "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }
