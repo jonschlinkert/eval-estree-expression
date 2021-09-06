@@ -1,14 +1,15 @@
 'use strict';
 
 const babel = require('@babel/parser');
-const Lexer = require('../lib/Lexer');
+// const Lexer = require('../lib/Lexer');
 const ExpressionSync = require('../lib/ExpressionSync');
-const { evaluate } = require('..');
+const { evaluate, variables } = require('..');
 
 exports.parse = (source, options = {}) => {
   if (typeof source === 'string') {
     const opts = { ...options };
-    const input = (opts.not_expression || opts.boolean_logical_operators) ? Lexer.toString(source) : source;
+    // const input = (opts.notExpression || opts.booleanLogicalOperators) ? Lexer.toString(source) : source;
+    const input = source;
     const ast = babel.parseExpression(input, opts);
     return { input, ast, opts };
   }
@@ -32,6 +33,11 @@ exports.expression.sync = (input, options = {}) => {
 exports.evaluate = (input, context = {}, options = {}) => {
   const { ast, opts } = exports.parse(input, options);
   return evaluate(ast, context, opts);
+};
+
+exports.variables = (input, options = {}) => {
+  const { ast, opts } = exports.parse(input, options);
+  return variables(ast, opts);
 };
 
 exports.evaluate.sync = (input, context = {}, options = {}) => {

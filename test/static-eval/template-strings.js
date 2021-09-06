@@ -4,7 +4,13 @@ const assert = require('assert/strict');
 const { evaluate } = require('../..');
 const { parse } = require('esprima');
 
-const opts = { allow_functions: true };
+/**
+ * Tests from static-eval library
+ * Licensed under the MIT License.
+ * Copyright (c) 2013 James Halliday
+ */
+
+const opts = { functions: true };
 
 describe('template strings', () => {
   it('untagged template strings', () => {
@@ -27,6 +33,22 @@ describe('template strings', () => {
     };
 
     const res = evaluate.sync(ast, ctx, opts);
+    assert.deepEqual(res, 'foo');
+  });
+
+  it('async tagged template strings', async () => {
+    const src = 'template`${1},${2 + n},${`4,5`}`';
+    const ast = parse(src).body[0].expression;
+    const ctx = {
+      template: function(strings, ...values) {
+        assert.deepEqual(strings, ['', ',', ',', '']);
+        assert.deepEqual(values, [1, 8, '4,5']);
+        return 'foo';
+      },
+      n: Promise.resolve(6)
+    };
+
+    const res = await evaluate(ast, ctx, opts);
     assert.deepEqual(res, 'foo');
   });
 });

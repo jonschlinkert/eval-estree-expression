@@ -14,7 +14,7 @@ describe('operators', () => {
     });
 
     it('should throw whe regex operator is disabled', () => {
-      assert.throws(() => e.sync('name =~ /^a.*c$/', { name: 'abc' }, { regex_operator: false }));
+      assert.throws(() => e.sync('name =~ /^a.*c$/', { name: 'abc' }, { regexOperator: false }));
     });
   });
 
@@ -316,7 +316,7 @@ describe('operators', () => {
   });
 
   describe('"boolean binary" logical operators', () => {
-    const b = (input, context, options) => e.sync(input, context, { boolean_logical_operators: true, ...options });
+    const b = (input, context, options) => e.sync(input, context, { booleanLogicalOperators: true, ...options });
 
     it('should evaluate &&', () => {
       assert.equal(b('0 && 1'), false);

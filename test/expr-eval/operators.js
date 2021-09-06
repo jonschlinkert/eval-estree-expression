@@ -1,17 +1,14 @@
 'use strict';
 
 const assert = require('assert/strict');
-const spy = require('./support/spy');
 const { evaluate: e } = require('../support');
-const opts = { allow_functions: true };
+const opts = { functions: true };
 
-function returnTrue() {
-  return true;
-}
-
-function returnFalse() {
-  return false;
-}
+/**
+ * Tests from expr-eval library
+ * Licensed under the MIT License.
+ * Copyright (c) 2015 Matthew Crumley
+ */
 
 function assertCloseTo(expected, actual, delta) {
   return assert.ok(Math.abs(expected - actual) <= delta);
@@ -134,144 +131,6 @@ describe('Operators', () => {
     });
   });
 
-  describe('and operator', () => {
-    it('1 and 0', () => {
-      assert.equal(e.sync('1 and 0', {}, { boolean_logical_operators: true }), false);
-    });
-
-    it('1 and 1', () => {
-      assert.equal(e.sync('1 and 1', {}, { boolean_logical_operators: true }), true);
-    });
-
-    it('0 and 0', () => {
-      assert.equal(e.sync('0 and 0', {}, { boolean_logical_operators: true }), false);
-    });
-
-    it('0 and 1', () => {
-      assert.equal(e.sync('0 and 1', {}, { boolean_logical_operators: true }), false);
-    });
-
-    it('0 and 1 and 0', () => {
-      assert.equal(e.sync('0 and 1 and 0', {}, { boolean_logical_operators: true }), false);
-    });
-
-    it('1 and 1 and 0', () => {
-      assert.equal(e.sync('1 and 1 and 0', {}, { boolean_logical_operators: true }), false);
-    });
-
-    it('skips rhs when lhs is false', () => {
-      const notCalled = spy(returnFalse);
-      assert.equal(e.sync('false and notCalled()', { notCalled }, { allow_functions: true, boolean_logical_operators: true }), false);
-      assert.equal(notCalled.called, false);
-    });
-
-    it('evaluates rhs when lhs is true', () => {
-      const called = spy(returnFalse);
-      assert.equal(e.sync('true and called()', { called }, { allow_functions: true, boolean_logical_operators: true }), false);
-      assert.equal(called.called, true);
-    });
-  });
-
-  describe('or operator', () => {
-    it('1 or 0', () => {
-      assert.equal(e.sync('1 or 0', {}, { boolean_logical_operators: true }), true);
-    });
-
-    it('1 or 1', () => {
-      assert.equal(e.sync('1 or 1', {}, { boolean_logical_operators: true }), true);
-    });
-
-    it('0 or 0', () => {
-      assert.equal(e.sync('0 or 0', {}, { boolean_logical_operators: true }), false);
-    });
-
-    it('0 or 1', () => {
-      assert.equal(e.sync('0 or 1', {}, { boolean_logical_operators: true }), true);
-    });
-
-    it('0 or 1 or 0', () => {
-      assert.equal(e.sync('0 or 1 or 0', {}, { boolean_logical_operators: true }), true);
-    });
-
-    it('1 or 1 or 0', () => {
-      assert.equal(e.sync('1 or 1 or 0', {}, { boolean_logical_operators: true }), true);
-    });
-
-    it('skips rhs when lhs is true', () => {
-      const notCalled = spy(returnFalse);
-
-      assert.equal(e.sync('true or notCalled()', { notCalled }, { allow_functions: true, boolean_logical_operators: true }), true);
-      assert.equal(notCalled.called, false);
-    });
-
-    it('evaluates rhs when lhs is false', () => {
-      const called = spy(returnTrue);
-
-      assert.equal(e.sync('false or called()', { called }, { allow_functions: true, boolean_logical_operators: true }), true);
-      assert.equal(called.called, true);
-    });
-  });
-
-  describe('in operator', () => {
-    it('"a" in ["a", "b"]', () => {
-      assert.equal(e.sync('"a" in toto', { 'toto': ['a', 'b'] }), true);
-    });
-
-    it('"a" in ["b", "a"]', () => {
-      assert.equal(e.sync('"a" in toto', { 'toto': ['b', 'a'] }), true);
-    });
-
-    it('3 in [4, 3]', () => {
-      assert.equal(e.sync('3 in toto', { 'toto': [4, 3] }), true);
-    });
-
-    it('"c" in ["a", "b"]', () => {
-      assert.equal(e.sync('"c" in toto', { 'toto': ['a', 'b'] }), false);
-    });
-
-    it('"c" in ["b", "a"]', () => {
-      assert.equal(e.sync('"c" in toto', { 'toto': ['b', 'a'] }), false);
-    });
-
-    it('3 in [1, 2]', () => {
-      assert.equal(e.sync('3 in toto', { 'toto': [1, 2] }), false);
-    });
-  });
-
-  describe('not operator', () => {
-    it('not 1', () => {
-      assert.equal(e.sync('not 1', {}, { not_expression: true }), false);
-    });
-
-    it('not true', () => {
-      assert.equal(e.sync('not true', {}, { not_expression: true }), false);
-    });
-
-    it('not 0', () => {
-      assert.equal(e.sync('not 0', {}, { not_expression: true }), true);
-    });
-
-    it('not false', () => {
-      assert.equal(e.sync('not false', {}, { not_expression: true }), true);
-    });
-
-    it('not 4', () => {
-      assert.equal(e.sync('not 4', {}, { not_expression: true }), false);
-    });
-
-    it('1 and not 0', () => {
-      assert.equal(e.sync('1 and not 0', {}, { not_expression: true }), true);
-    });
-
-    it('not "0"', () => {
-      assert.equal(e.sync('not "0"', {}, { not_expression: true }), false);
-    });
-
-    it('not "', () => {
-      assert.equal(e.sync('not ""', {}, { not_expression: true }), true);
-    });
-  });
-
   describe('conditional operator', () => {
     it('1 ? 2 : 0 ? 3 : 4', () => {
       assert.equal(e.sync('1 ? 2 : 0 ? 3 : 4'), 2);
@@ -293,9 +152,9 @@ describe('Operators', () => {
       assert.equal(e.sync('(1 ? 2 : 0) ? 3 : 4'), 3);
     });
 
-    // it('Math.min(1 ? 3 : 10, 0 ? 11 : 2)', () => {
-    //   assert.equal(e.sync('Math.min(1 ? 3 : 10, 0 ? 11 : 2)', {}, opts), 2);
-    // });
+    it('Math.min(1 ? 3 : 10, 0 ? 11 : 2)', () => {
+      assert.equal(e.sync('Math.min(1 ? 3 : 10, 0 ? 11 : 2)', { Math }, opts), 2);
+    });
 
     it('a == 1 ? b == 2 ? 3 : 4 : 5', () => {
       assert.equal(e.sync('a == 1 ? b == 2 ? 3 : 4 : 5', { a: 1, b: 2 }), 3);
@@ -355,56 +214,59 @@ describe('Operators', () => {
   });
 
   describe('Math.sin(x)', () => {
-    // it('returns the correct value', () => {
-    //   const delta = 1e-15;
-    //   assert.equal(e.sync('Math.sin(0)', {}, opts), 0);
-    //   assertCloseTo(e.sync('Math.sin(0.5)', {}, opts), 0.479425538604203, delta);
-    //   assertCloseTo(e.sync('Math.sin(1)', {}, opts), 0.8414709848078965, delta);
-    //   assertCloseTo(e.sync('Math.sin(-1)', {}, opts), -0.8414709848078965, delta);
-    //   assertCloseTo(e.sync('Math.sin(Math.PI/4)', {}, opts), 0.7071067811865475, delta);
-    //   assertCloseTo(e.sync('Math.sin(Math.PI/2)', {}, opts), 1, delta);
-    //   assertCloseTo(e.sync('Math.sin(3*Math.PI/4)', {}, opts), 0.7071067811865475, delta);
-    //   assertCloseTo(e.sync('Math.sin (Math.PI)', {}, opts), 0, delta);
-    //   assertCloseTo(e.sync('Math.sin(2*Math.PI)', {}, opts), 0, delta);
-    //   assertCloseTo(e.sync('Math.sin(-Math.PI)', {}, opts), 0, delta);
-    //   assertCloseTo(e.sync('Math.sin(3*Math.PI/2)', {}, opts), -1, delta);
-    //   assertCloseTo(e.sync('Math.sin (15)', {}, opts), 0.6502878401571168, delta);
-    // });
+    it('returns the correct value', () => {
+      const ctx = { Math };
+      const delta = 1e-15;
+      assert.equal(e.sync('Math.sin(0)', ctx, opts), 0);
+      assertCloseTo(e.sync('Math.sin(0.5)', ctx, opts), 0.479425538604203, delta);
+      assertCloseTo(e.sync('Math.sin(1)', ctx, opts), 0.8414709848078965, delta);
+      assertCloseTo(e.sync('Math.sin(-1)', ctx, opts), -0.8414709848078965, delta);
+      assertCloseTo(e.sync('Math.sin(Math.PI/4)', ctx, opts), 0.7071067811865475, delta);
+      assertCloseTo(e.sync('Math.sin(Math.PI/2)', ctx, opts), 1, delta);
+      assertCloseTo(e.sync('Math.sin(3*Math.PI/4)', ctx, opts), 0.7071067811865475, delta);
+      assertCloseTo(e.sync('Math.sin (Math.PI)', ctx, opts), 0, delta);
+      assertCloseTo(e.sync('Math.sin(2*Math.PI)', ctx, opts), 0, delta);
+      assertCloseTo(e.sync('Math.sin(-Math.PI)', ctx, opts), 0, delta);
+      assertCloseTo(e.sync('Math.sin(3*Math.PI/2)', ctx, opts), -1, delta);
+      assertCloseTo(e.sync('Math.sin (15)', ctx, opts), 0.6502878401571168, delta);
+    });
 
-    // it('returns the correct value -async', async () => {
-    //   const delta = 1e-15;
-    //   assert.equal(await e('Math.sin(0)', {}, opts), 0);
-    //   assertCloseTo(await e('Math.sin(0.5)', {}, opts), 0.479425538604203, delta);
-    //   assertCloseTo(await e('Math.sin(1)', {}, opts), 0.8414709848078965, delta);
-    //   assertCloseTo(await e('Math.sin(-1)', {}, opts), -0.8414709848078965, delta);
-    //   assertCloseTo(await e('Math.sin(Math.PI/4)', {}, opts), 0.7071067811865475, delta);
-    //   assertCloseTo(await e('Math.sin(Math.PI/2)', {}, opts), 1, delta);
-    //   assertCloseTo(await e('Math.sin(3*Math.PI/4)', {}, opts), 0.7071067811865475, delta);
-    //   assertCloseTo(await e('Math.sin (Math.PI)', {}, opts), 0, delta);
-    //   assertCloseTo(await e('Math.sin(2*Math.PI)', {}, opts), 0, delta);
-    //   assertCloseTo(await e('Math.sin(-Math.PI)', {}, opts), 0, delta);
-    //   assertCloseTo(await e('Math.sin(3*Math.PI/2)', {}, opts), -1, delta);
-    //   assertCloseTo(await e('Math.sin (15)', {}, opts), 0.6502878401571168, delta);
-    // });
+    it('returns the correct value - async', async () => {
+      const ctx = { Math };
+      const delta = 1e-15;
+      assert.equal(await e('Math.sin(0)', ctx, opts), 0);
+      assertCloseTo(await e('Math.sin(0.5)', ctx, opts), 0.479425538604203, delta);
+      assertCloseTo(await e('Math.sin(1)', ctx, opts), 0.8414709848078965, delta);
+      assertCloseTo(await e('Math.sin(-1)', ctx, opts), -0.8414709848078965, delta);
+      assertCloseTo(await e('Math.sin(Math.PI/4)', ctx, opts), 0.7071067811865475, delta);
+      assertCloseTo(await e('Math.sin(Math.PI/2)', ctx, opts), 1, delta);
+      assertCloseTo(await e('Math.sin(3*Math.PI/4)', ctx, opts), 0.7071067811865475, delta);
+      assertCloseTo(await e('Math.sin (Math.PI)', ctx, opts), 0, delta);
+      assertCloseTo(await e('Math.sin(2*Math.PI)', ctx, opts), 0, delta);
+      assertCloseTo(await e('Math.sin(-Math.PI)', ctx, opts), 0, delta);
+      assertCloseTo(await e('Math.sin(3*Math.PI/2)', ctx, opts), -1, delta);
+      assertCloseTo(await e('Math.sin (15)', ctx, opts), 0.6502878401571168, delta);
+    });
   });
 
-  // describe('cos(x)', () => {
-  //   it('returns the correct value', () => {
-  //     const delta = 1e-15;
-  //     assert.equal(e.sync('Math.cos (0)', {}, opts), 1);
-  //     assertCloseTo(e.sync('Math.cos (0.5)', {}, opts), 0.8775825618903728, delta);
-  //     assertCloseTo(e.sync('Math.cos (1)', {}, opts), 0.5403023058681398, delta);
-  //     assertCloseTo(e.sync('Math.cos (-1)', {}, opts), 0.5403023058681398, delta);
-  //     assertCloseTo(e.sync('Math.cos(Math.PI/4)', {}, opts), 0.7071067811865475, delta);
-  //     assertCloseTo(e.sync('Math.cos(Math.PI/2)', {}, opts), 0, delta);
-  //     assertCloseTo(e.sync('Math.cos(3*Math.PI/4)', {}, opts), -0.7071067811865475, delta);
-  //     assertCloseTo(e.sync('Math.cos (Math.PI)', {}, opts), -1, delta);
-  //     assertCloseTo(e.sync('Math.cos(2*Math.PI)', {}, opts), 1, delta);
-  //     assertCloseTo(e.sync('Math.cos (-Math.PI)', {}, opts), -1, delta);
-  //     assertCloseTo(e.sync('Math.cos(3*Math.PI/2)', {}, opts), 0, delta);
-  //     assertCloseTo(e.sync('Math.cos (15)', {}, opts), -0.7596879128588213, delta);
-  //   });
-  // });
+  describe('cos(x)', () => {
+    it('returns the correct value', () => {
+      const ctx = { Math };
+      const delta = 1e-15;
+      assert.equal(e.sync('Math.cos (0)', ctx, opts), 1);
+      assertCloseTo(e.sync('Math.cos (0.5)', ctx, opts), 0.8775825618903728, delta);
+      assertCloseTo(e.sync('Math.cos (1)', ctx, opts), 0.5403023058681398, delta);
+      assertCloseTo(e.sync('Math.cos (-1)', ctx, opts), 0.5403023058681398, delta);
+      assertCloseTo(e.sync('Math.cos(Math.PI/4)', ctx, opts), 0.7071067811865475, delta);
+      assertCloseTo(e.sync('Math.cos(Math.PI/2)', ctx, opts), 0, delta);
+      assertCloseTo(e.sync('Math.cos(3*Math.PI/4)', ctx, opts), -0.7071067811865475, delta);
+      assertCloseTo(e.sync('Math.cos (Math.PI)', ctx, opts), -1, delta);
+      assertCloseTo(e.sync('Math.cos(2*Math.PI)', ctx, opts), 1, delta);
+      assertCloseTo(e.sync('Math.cos (-Math.PI)', ctx, opts), -1, delta);
+      assertCloseTo(e.sync('Math.cos(3*Math.PI/2)', ctx, opts), 0, delta);
+      assertCloseTo(e.sync('Math.cos (15)', ctx, opts), -0.7596879128588213, delta);
+    });
+  });
 
   describe('-x', () => {
     it('negates its argument', () => {

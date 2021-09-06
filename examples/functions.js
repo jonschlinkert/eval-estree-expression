@@ -5,9 +5,7 @@ process.on('exit', () => console.log(`Time: ${Date.now() - start}ms`));
 
 // const esprima = require('esprima');
 const babel = require('@babel/parser');
-const Expression = require('../lib/Expression');
-
-const e = (ast, context, options) => Expression.evaluate(ast, context, options);
+const { evaluate } = require('..');
 
 // const parse = (input, options) => esprima.parse(input).body[0].expression;
 const parse = (input, options) => babel.parseExpression(input, options);
@@ -22,6 +20,6 @@ const context = {
 
 const input = '[1,2,3+4*10+n,foo(3+5),bar(10-4, z),obj[""+"x"].y]';
 const tree = parse(input);
-const result = e(tree, context, { functions: true });
+const result = evaluate.sync(tree, context, { functions: true });
 
 console.log(result);

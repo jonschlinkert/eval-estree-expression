@@ -1,10 +1,16 @@
 'use strict';
 
 const assert = require('assert/strict');
-const { evaluate } = require('../..');
 const { parse } = require('esprima');
+const { evaluate } = require('../..');
 
-const opts = { allow_functions: true };
+/**
+ * Tests from static-eval library
+ * Licensed under the MIT License.
+ * Copyright (c) 2013 James Halliday
+ */
+
+const opts = { functions: true, strict: true };
 
 describe('function property', () => {
   it('should eval function properties', () => {

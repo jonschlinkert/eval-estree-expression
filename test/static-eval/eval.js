@@ -1,10 +1,17 @@
 'use strict';
 
 const assert = require('assert/strict');
+const escodegen = require('escodegen');
 const { evaluate } = require('../..');
 const { parse } = require('esprima');
 
-const opts = { allow_functions: true, strict: false };
+/**
+ * Tests from static-eval library
+ * Licensed under the MIT License.
+ * Copyright (c) 2013 James Halliday
+ */
+
+const opts = { functions: true, strict: false, generate: escodegen.generate };
 
 describe('eval', () => {
   describe('sync', () => {
@@ -31,9 +38,15 @@ describe('eval', () => {
     });
 
     it('boolean', () => {
-      const src = '[ 1===2+3-16/4, [2]==2, [2]!==2, [2]!==[2] ]';
+      const src = '[ 1===2+3-16/4, [2]==2, [2]!==2, [2]!==[2], "2"==2 ]';
       const ast = parse(src).body[0].expression;
-      assert.deepEqual(evaluate.sync(ast, {}, opts), [ true, true, true, true ]);
+      assert.deepEqual(evaluate.sync(ast, {}, opts), [ true, true, true, true, true ]);
+    });
+
+    it('ObjectExpression', () => {
+      const src = '({ a: "b", c: "d" }) ';
+      const ast = parse(src).body[0].expression;
+      assert.deepEqual(evaluate.sync(ast), { a: 'b', c: 'd' });
     });
 
     it('array methods', () => {
@@ -43,10 +56,7 @@ describe('eval', () => {
     });
 
     it('array methods invocation count', () => {
-      const variables = {
-        values: [1, 2, 3],
-        receiver: []
-      };
+      const variables = { values: [1, 2, 3], receiver: [] };
       const src = 'values.forEach(function(x) { receiver.push(x); })';
       const ast = parse(src).body[0].expression;
       evaluate.sync(ast, variables, opts);
@@ -71,6 +81,13 @@ describe('eval', () => {
 
     it('FunctionExpression unresolved', () => {
       const src = '(function(){console.log("Not Good")})';
+      const ast = parse(src).body[0].expression;
+      const res = evaluate.sync(ast, {}, opts);
+      assert.equal(res, undefined);
+    });
+
+    it('ArrowFunctionExpression unresolved', () => {
+      const src = '(() => {console.log("Not Good")})';
       const ast = parse(src).body[0].expression;
       const res = evaluate.sync(ast, {}, opts);
       assert.equal(res, undefined);
@@ -125,9 +142,7 @@ describe('eval', () => {
     });
 
     it('short circuit evaluation AND', () => {
-      const variables = {
-        value: null
-      };
+      const variables = { value: null };
       const src = 'value && value.func()';
       const ast = parse(src).body[0].expression;
       const res = evaluate.sync(ast, variables, opts);
@@ -212,12 +227,18 @@ describe('eval', () => {
       assert.deepEqual(await evaluate(ast, { x: 2 }, opts), [2, 4, 6]);
     });
 
+    it('array methods with fat arrow function', async () => {
+      const ast = parse('[1, 2, 3].map((n) => { return n * x })').body[0].expression;
+      assert.deepEqual(await evaluate(ast, { x: 2 }, opts), [2, 4, 6]);
+
+      const ast2 = parse('[1, 2, 3].map(n => n * x);').body[0].expression;
+      assert.deepEqual(await evaluate(ast2, { x: 2 }, opts), [2, 4, 6]);
+    });
+
     it('evaluate this', async () => {
       const src = 'this.x + this.y.z';
       const ast = parse(src).body[0].expression;
-      const res = await evaluate(ast, {
-        'this': { x: 1, y: { z: 100 } }
-      }, opts);
+      const res = await evaluate(ast, { 'this': { x: 1, y: { z: 100 } } }, opts);
       assert.equal(res, 101);
     });
 
@@ -305,6 +326,18 @@ describe('eval', () => {
         onInvoke: function() { invoked = true; }
       };
       const src = 'noop(function(){ onInvoke(); })';
+      const ast = parse(src).body[0].expression;
+      await evaluate(ast, variables, opts);
+      assert.equal(invoked, false);
+    });
+
+    it('fat arrow function declaration does not invoke CallExpressions', async () => {
+      let invoked = false;
+      const variables = {
+        noop: function() {},
+        onInvoke: function() { invoked = true; }
+      };
+      const src = 'noop(() => { onInvoke(); })';
       const ast = parse(src).body[0].expression;
       await evaluate(ast, variables, opts);
       assert.equal(invoked, false);

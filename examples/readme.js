@@ -10,15 +10,13 @@ const parse = input => babel.parseExpression(input);
  */
 
 (async () => {
-  console.log('--- math');
+  console.log('--- and');
   console.log(await evaluate(parse('1 + 2'))); //=> 3
   console.log(await evaluate(parse('5 * 2'))); //=> 10
-
-  console.log('--- relational');
   console.log(await evaluate(parse('1 > 2'))); //=> false
   console.log(await evaluate(parse('1 < 2'))); //=> true
 
-  console.log('--- equality');
+
   console.log(await evaluate(parse('page.title === "home"'), { page: { title: 'home' } })); //=> true
 
   const options = { booleanLogicalOperators: true };

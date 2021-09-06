@@ -1,73 +1,15 @@
 'use strict';
 
-const babel = require('@babel/parser');
 const assert = require('assert/strict');
-const { evaluate: e } = require('../support');
+const { evaluate: e, variables } = require('../support');
 
-const opts = { allow_functions: true, allow_builtin_objects: true };
+/**
+ * Tests from expr-eval library
+ * Licensed under the MIT License.
+ * Copyright (c) 2015 Matthew Crumley
+ */
 
-const parse = (input, options) => {
-  const builtins = new Set(['Array', 'Boolean', 'BigInt', 'Math', 'Number', 'String', 'Symbol']);
-  const ast = babel.parseExpression(input, options);
-  const stack = [];
-
-  const visit = (node, fn, parent) => {
-    Reflect.defineProperty(node, 'parent', { value: parent });
-    fn(node, parent);
-
-    if (node.right) visit(node.right, fn, node);
-    if (node.left) visit(node.left, fn, node);
-    if (node.object) visit(node.object, fn, node);
-    if (node.callee) visit(node.callee, fn, node);
-    if (node.argument) visit(node.argument, fn, node);
-    if (node.property) visit(node.property, fn, node);
-    if (node.alternate) visit(node.alternate, fn, node);
-    if (node.consequent) visit(node.consequent, fn, node);
-    if (node.test) visit(node.test, fn, node);
-
-    if (node.expressions) {
-      const length = node.expressions.length;
-      for (let i = 0; i < length; i++) {
-        visit(node.quasis[i], fn, node);
-        visit(node.expressions[i], fn, node);
-      }
-      visit(node.quasis[length], fn, node);
-      return;
-    }
-
-    if (node.properties) mapVisit(node.properties, fn, node);
-    if (node.arguments) mapVisit(node.arguments, fn, node);
-    if (node.elements) mapVisit(node.elements, fn, node);
-    if (node.body) mapVisit(node.body, fn, node);
-  };
-
-  const mapVisit = (nodes, fn, parent) => {
-    stack.push(parent);
-    for (const child of nodes) visit(child, fn, parent);
-    stack.pop();
-  };
-
-  const variables = (options = {}) => {
-    const names = [];
-
-    visit(ast, (node, parent) => {
-      if (node.type === 'Identifier') {
-        if (node === parent?.property) {
-          if (options.withMembers !== true) return;
-          if (names.length === 0) return;
-
-          names.push(`${names.pop()}.${node.name}`);
-        } else if (!names.includes(node.name) && !builtins.has(node.name)) {
-          names.push(node.name);
-        }
-      }
-    });
-
-    return [...new Set(names)].reverse();
-  };
-
-  return { variables };
-};
+const opts = { functions: true };
 
 describe('Expression', () => {
   describe('evaluate()', () => {
@@ -222,78 +164,73 @@ describe('Expression', () => {
 
   describe('variables()', () => {
     it('["x", "y", "z.y.x"]', () => {
-      assert.deepEqual(parse('x * (y * 3) + z.y.x').variables(), ['x', 'y', 'z']);
+      assert.deepEqual(variables('x * (y * 3) + z.y.x'), ['x', 'y', 'z']);
     });
 
     it('a || b ? c + d : e * f', () => {
-      assert.deepEqual(parse('(a || b) ? c + d : e * f').variables(), ['a', 'b', 'c', 'd', 'e', 'f']);
+      assert.deepEqual(variables('(a || b) ? c + d : e * f'), ['a', 'b', 'c', 'd', 'e', 'f']);
     });
 
     it('$x * $y_+$a1*$z - $b2', () => {
-      assert.deepEqual(parse('$x * $y_+$a1*$z - $b2').variables(), ['$x', '$y_', '$a1', '$z', '$b2']);
+      assert.deepEqual(variables('$x * $y_+$a1*$z - $b2'), ['$x', '$y_', '$a1', '$z', '$b2']);
     });
 
     it('user.age + 2', () => {
-      assert.deepEqual(parse('user.age + 2').variables(), ['user']);
+      assert.deepEqual(variables('user.age + 2'), ['user']);
     });
 
     it('user.age + 2 with { withMembers: false } option', () => {
-      assert.deepEqual(parse('user.age + 2').variables({ withMembers: false }), ['user']);
+      assert.deepEqual(variables('user.age + 2', { withMembers: false }), ['user']);
     });
 
     it('user.age + 2 with { withMembers: true } option', () => {
-      const expr = parse('user.age + 2');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['user.age']);
+      assert.deepEqual(variables('user.age + 2', { withMembers: true }), ['user.age']);
     });
 
     it('x.y ? x.y.z : a.z with { withMembers: true } option', () => {
-      const expr = parse('x.y ? x.y.z : a.z');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['x.y', 'x.y.z', 'a.z']);
+      assert.deepEqual(variables('x.y ? x.y.z : a.z', { withMembers: true }), ['x.y', 'x.y.z', 'a.z']);
     });
 
     it('x + x.y + x.z with { withMembers: true } option', () => {
-      const expr = parse('x + x.y + x.z');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['x', 'x.y', 'x.z']);
+      const input = 'x + x.y + x.z';
+      assert.deepEqual(variables(input, { withMembers: true }), ['x', 'x.y', 'x.z']);
     });
 
     it('x.y < 3 ? 2 * x.y.z : a.z + 1 with { withMembers: true } option', () => {
-      const expr = parse('x.y < 3 ? 2 * x.y.z : a.z + 1');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['x.y', 'x.y.z', 'a.z']);
+      const input = 'x.y < 3 ? 2 * x.y.z : a.z + 1';
+      assert.deepEqual(variables(input, { withMembers: true }), ['x.y', 'x.y.z', 'a.z']);
     });
 
     it('user.age with { withMembers: true } option', () => {
-      const expr = parse('user.age');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['user.age']);
+      assert.deepEqual(variables('user.age', { withMembers: true }), ['user.age']);
     });
 
     it('x with { withMembers: true } option', () => {
-      const expr = parse('x');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['x']);
+      assert.deepEqual(variables('x', { withMembers: true }), ['x']);
     });
 
     it('x with { withMembers: false } option', () => {
-      const expr = parse('x');
-      assert.deepEqual(expr.variables({ withMembers: false }), ['x']);
+      assert.deepEqual(variables('x', { withMembers: false }), ['x']);
     });
 
     it('Math.max(conf.limits.lower, conf.limits.upper) with { withMembers: false } option', () => {
-      const expr = parse('Math.max(conf.limits.lower, conf.limits.upper)');
-      assert.deepEqual(expr.variables({ withMembers: false }), ['conf']);
+      const input = 'Math.max(conf.limits.lower, conf.limits.upper)';
+      assert.deepEqual(variables(input, { withMembers: false }), ['conf', 'Math']);
     });
 
     it('Math.max(conf.limits.lower, conf.limits.upper) with { withMembers: true } option', () => {
-      const expr = parse('Math.max(conf.limits.lower, conf.limits.upper)');
-      assert.deepEqual(expr.variables({ withMembers: true }), ['conf.limits.upper', 'conf.limits.lower']);
+      const input = 'Math.max(conf.limits.lower, conf.limits.upper)';
+      assert.deepEqual(variables(input, { withMembers: true }), ['conf.limits.upper', 'conf.limits.lower', 'Math.max']);
     });
 
     it('fn.max(conf.limits.lower, conf.limits.upper) with { withMembers: false } option', () => {
-      const expr = parse('fn.max(conf.limits.lower, conf.limits.upper)');
-      assert.deepEqual(expr.variables({ withMembers: false }), ['conf', 'fn']);
+      const input = 'fn.max(conf.limits.lower, conf.limits.upper)';
+      assert.deepEqual(variables(input, { withMembers: false }), ['conf', 'fn']);
     });
 
     it('fn.max(conf.limits.lower, conf.limits.upper) with { withMembers: true } option', () => {
-      const expr = parse('fn.max(conf.limits.lower, conf.limits.upper)');
-      assert.deepEqual(expr.variables({ withMembers: true }).sort(), ['fn.max', 'conf.limits.lower', 'conf.limits.upper'].sort());
+      const input = 'fn.max(conf.limits.lower, conf.limits.upper)';
+      assert.deepEqual(variables(input, { withMembers: true }).sort(), ['fn.max', 'conf.limits.lower', 'conf.limits.upper'].sort());
     });
   });
 });
