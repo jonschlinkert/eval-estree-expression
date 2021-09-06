@@ -1,33 +1,89 @@
 {
   "name": "eval-estree-expression",
-  "description": "Node.js library and API for expressions",
-  "version": "0.0.0",
-  "private": true,
+  "description": "Safely evaluate JavaScript (estree) expressions, sync and async.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "homepage": "https://github.com/jonschlinkert/eval-estree-expression",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/eval-estree-expression",
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/eval-estree-expression/issues"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "scripts": {
     "test": "mocha --recursive --ignore 'test/fixtures/**'",
     "test:ci": "nyc --reporter=lcov npm run test",
     "cover": "nyc --reporter=text --reporter=html npm run test"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.14.4",
-    "@babel/eslint-plugin": "^7.13.16",
-    "@babel/parser": "^7.14.7",
+    "@babel/eslint-parser": "^7.15.4",
+    "@babel/eslint-plugin": "^7.14.5",
+    "@babel/parser": "^7.15.5",
     "gulp-format-md": "^2.0.0",
-    "jsep": "github:EricSmekens/jsep",
-    "mocha": "^9.0.2",
+    "mocha": "^9.1.1",
     "nyc": "^15.1.0"
   },
-  "dependencies": {
-    "escodegen": "^2.0.0"
-  },
+  "keywords": [
+    "@babel",
+    "@babel/parser",
+    "6to5",
+    "abstract",
+    "analysis",
+    "ast",
+    "babel",
+    "babel-cli",
+    "compiler",
+    "context",
+    "ecma",
+    "ecmascript",
+    "es6",
+    "estree",
+    "esprima",
+    "eval",
+    "evaluate",
+    "expr-eval",
+    "expression",
+    "function",
+    "invoke",
+    "javascript",
+    "js",
+    "math",
+    "operator",
+    "parse",
+    "parser",
+    "parsing",
+    "run",
+    "safe",
+    "safe-eval",
+    "static",
+    "syntax",
+    "tc39",
+    "transpile",
+    "transpiler",
+    "tree"
+  ],
   "verb": {
-    "toc": false,
+    "toc": true,
     "layout": "default",
     "tasks": [
       "readme"
     ],
     "plugins": [
       "gulp-format-md"
+    ],
+    "related": {
+      "list": [
+        "whence"
+      ]
+    },
+    "reflinks": [
+      "acorn",
+      "escodegen",
+      "esprima"
     ],
     "lint": {
       "reflinks": true
