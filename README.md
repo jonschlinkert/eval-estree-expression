@@ -1,4 +1,4 @@
-# eval-estree-expression [![NPM version](https://img.shields.io/npm/v/eval-estree-expression.svg?style=flat)](https://www.npmjs.com/package/eval-estree-expression) [![NPM monthly downloads](https://img.shields.io/npm/dm/eval-estree-expression.svg?style=flat)](https://npmjs.org/package/eval-estree-expression) [![NPM total downloads](https://img.shields.io/npm/dt/eval-estree-expression.svg?style=flat)](https://npmjs.org/package/eval-estree-expression)
+# eval-estree-expression [![NPM version](https://img.shields.io/npm/v/eval-estree-expression.svg?style=flat)](https://www.npmjs.com/package/eval-estree-expression) [![NPM monthly downloads](https://img.shields.io/npm/dm/eval-estree-expression.svg?style=flat)](https://npmjs.org/package/eval-estree-expression) [![NPM total downloads](https://img.shields.io/npm/dt/eval-estree-expression.svg?style=flat)](https://npmjs.org/package/eval-estree-expression)  [![Tests](https://github.com/jonschlinkert/eval-estree-expression/actions/workflows/main.yml/badge.svg)](https://github.com/jonschlinkert/eval-estree-expression/actions/workflows/main.yml)
 
 > Safely evaluate JavaScript (estree) expressions, sync and async.
 
