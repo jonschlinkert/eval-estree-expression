@@ -1,6 +1,6 @@
 'use strict';
 
-const assert = require('assert/strict');
+const assert = require('assert').strict;
 const escodegen = require('escodegen');
 const { evaluate } = require('../..');
 const { parse } = require('esprima');

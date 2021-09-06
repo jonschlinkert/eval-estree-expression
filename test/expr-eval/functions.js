@@ -1,6 +1,6 @@
 'use strict';
 
-const assert = require('assert/strict');
+const assert = require('assert').strict;
 const { expression, evaluate: e } = require('../support');
 const opts = { functions: true };
 const ctx = { Math };
