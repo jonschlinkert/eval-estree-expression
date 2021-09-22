@@ -1,7 +1,7 @@
 {
   "name": "eval-estree-expression",
   "description": "Safely evaluate JavaScript (estree) expressions, sync and async.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "homepage": "https://github.com/jonschlinkert/eval-estree-expression",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
