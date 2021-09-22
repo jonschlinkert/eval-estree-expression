@@ -23,3 +23,13 @@ const tree = parse(input);
 const result = evaluate.sync(tree, context, { functions: true });
 
 console.log(result);
+
+const options = {
+  functions: true
+};
+
+console.log(evaluate.sync(parse('/([a-z]+)/.exec(" foo ")'), { x: 2 }, options));
+//=> [ 'foo', 'foo', index: 1, input: ' foo ', groups: undefined ]
+
+console.log(evaluate.sync(parse('[1, 2, 3].map(e => e + e)'), { x: 2 }, options));
+//=> throws an error
