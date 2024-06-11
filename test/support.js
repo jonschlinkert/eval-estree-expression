@@ -8,7 +8,10 @@ const { evaluate, variables } = require('..');
 exports.parse = (source, options = {}) => {
   if (typeof source === 'string') {
     const opts = { ...options };
-    // const input = (opts.notExpression || opts.booleanLogicalOperators) ? Lexer.toString(source) : source;
+    // const input = (opts.notExpression || opts.booleanLogicalOperators)
+    //   ? Lexer.toString(source)
+    //   : source;
+
     const input = source;
     const ast = babel.parseExpression(input, opts);
     return { input, ast, opts };
