@@ -2,7 +2,7 @@
 
 const babel = require('@babel/parser');
 const assert = require('assert').strict;
-const inspect = require('../lib/inspect');
+const inspect = require('./support/inspect');
 
 describe('inspect', () => {
   it('should remove undefined values', () => {

@@ -2,8 +2,8 @@
 
 const babel = require('@babel/parser');
 // const Lexer = require('../lib/Lexer');
-const ExpressionSync = require('../lib/ExpressionSync');
-const { evaluate, variables } = require('..');
+const ExpressionSync = require('../../lib/ExpressionSync');
+const { evaluate, variables } = require('../..');
 
 exports.parse = (source, options = {}) => {
   if (typeof source === 'string') {

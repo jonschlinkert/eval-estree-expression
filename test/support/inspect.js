@@ -1,7 +1,7 @@
 'use strict';
 
 const util = require('util');
-const { define, isEmpty, isObject } = require('./utils');
+const { define, isEmpty, isObject } = require('../../lib/utils');
 
 const prune = obj => {
   const node = {};
