@@ -50,6 +50,16 @@ describe('expressions', () => {
     });
   });
 
+  describe('OptionalCallExpression', () => {
+    it('should evaluate optional call expressions', () => {
+      // evaluate.sync('a?.()', { a: () => 2 }, opts);
+      assert.deepEqual(evaluate.sync('a?.()', { a: () => 2 }, opts), 2);
+      assert.deepEqual(evaluate.sync('a?.()', {}, opts), undefined);
+      assert.deepEqual(evaluate.sync('a?.b?.()', { a: { b: () => 2 } }, opts), 2);
+      assert.deepEqual(evaluate.sync('a?.b?.()', { a: {} }, opts), undefined);
+    });
+  });
+
   describe('AwaitExpression', () => {
     it('async await', async () => {
       const ctx = { x: Promise.resolve(1), y: Promise.resolve(2), z: Promise.resolve(3) };

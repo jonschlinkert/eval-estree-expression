@@ -68,3 +68,6 @@ temp
 vendor
 .DS_Store
 *.sublime-*
+.chat
+*.generated.*
+*.updated.*
