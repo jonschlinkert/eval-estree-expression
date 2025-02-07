@@ -1,6 +1,6 @@
 'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { parse } = require('esprima');
 const { evaluate } = require('../..');
 

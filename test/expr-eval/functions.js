@@ -1,6 +1,7 @@
+/* eslint-disable no-loss-of-precision */
 'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { expression, evaluate: e } = require('../support');
 const opts = { functions: true };
 const ctx = { Math };

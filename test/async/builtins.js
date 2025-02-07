@@ -1,11 +1,17 @@
 'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { evaluate: e } = require('../support');
 
-const opts = { functions: true };
+const opts = { functions: true, allowAwaitOutsideFunction: true };
 
 describe('built in objects', () => {
+  it('top level await', async () => {
+    assert.equal(await e('await 1', {}, opts), 1);
+    assert.equal(await e('Promise.resolve(1)', { Promise }, opts), 1);
+    assert.equal(await e('await Promise.resolve(1)', { Promise }, opts), 1);
+  });
+
   it('should evaluate Array', async () => {
     const ctx = { Array };
     assert.deepEqual(await e('new Array("1", ...arr)', { Array, arr: ['a', 'b'] }, opts), ['1', 'a', 'b']);

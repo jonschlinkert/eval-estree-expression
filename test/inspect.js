@@ -1,7 +1,7 @@
 'use strict';
 
 const babel = require('@babel/parser');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const inspect = require('./support/inspect');
 
 describe('inspect', () => {

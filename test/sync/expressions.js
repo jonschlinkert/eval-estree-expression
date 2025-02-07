@@ -1,6 +1,6 @@
 'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { evaluate } = require('../support');
 const { generate } = require('escodegen');
 
@@ -52,7 +52,6 @@ describe('expressions', () => {
 
   describe('OptionalCallExpression', () => {
     it('should evaluate optional call expressions', () => {
-      // evaluate.sync('a?.()', { a: () => 2 }, opts);
       assert.deepEqual(evaluate.sync('a?.()', { a: () => 2 }, opts), 2);
       assert.deepEqual(evaluate.sync('a?.()', {}, opts), undefined);
       assert.deepEqual(evaluate.sync('a?.b?.()', { a: { b: () => 2 } }, opts), 2);
