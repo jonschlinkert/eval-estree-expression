@@ -1,3 +1,5 @@
+'use strict';
+
 const { evaluate } = require('..');
 const { parseExpression } = require('@babel/parser');
 
