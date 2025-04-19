@@ -48,6 +48,73 @@ describe('expressions', () => {
     it('immediately invoked fat arrow with function args', async () => {
       assert.deepEqual(await e('((a, b, c) => a + b + c)(x, y, z(zz)) ', { x: 1, y: 2, z: v => v, zz: 3 }, opts), 6);
     });
+
+    it('nested arrow functions', async () => {
+      assert.deepEqual(await e('states.filter(n => n !== "final")', { Object, states: ['a', 'b', 'final'] }, opts), ['a', 'b']);
+
+      assert.deepEqual(await e('Object.keys(states)', {
+        Object,
+        states: { a: 1, b: 2, c: 3 }
+      }, opts), ['a', 'b', 'c']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k !== "c")', {
+        Object,
+        states: { a: 1, b: 2, c: 3 }
+      }, opts), ['a', 'b']);
+
+      assert.deepEqual(await e('k.startsWith("f")', { k: 'a' }, opts), false);
+      assert.deepEqual(await e('k.startsWith("f")', { k: 'f' }, opts), true);
+      assert.deepEqual(await e('!k.startsWith("f")', { k: 'a' }, opts), true);
+      assert.deepEqual(await e('!k.startsWith("f")', { k: 'f' }, opts), false);
+      assert.deepEqual(await e('!!k.startsWith("f")', { k: 'f' }, opts), true);
+      assert.deepEqual(await e('!!!k.startsWith("f")', { k: 'f' }, opts), false);
+      assert.deepEqual(await e('!Boolean(k.startsWith("f"))', { k: 'f', Boolean }, opts), false);
+
+      assert.deepEqual(await e('Object.keys(states).map(k => k)', {
+        Object,
+        states: { a: 1, b: 2, c: 3 }
+      }, opts), ['a', 'b', 'c']);
+
+      assert.deepEqual(await e('Object.keys(states).map(k => k + k)', {
+        Object,
+        states: { a: 1, b: 2, c: 3 }
+      }, opts), ['aa', 'bb', 'cc']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k)', {
+        Object,
+        states: { a: 1, b: 2, c: 3 }
+      }, opts), ['a', 'b', 'c']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k != "d")', {
+        Object,
+        states: { a: 1, b: 2, c: 3, d: 4 }
+      }, opts), ['a', 'b', 'c']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k !== "c" && k !== "d")', {
+        Object,
+        states: { a: 1, b: 2, c: 3, d: 4 }
+      }, opts), ['a', 'b']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k)', {
+        Object,
+        states: { a: 1, b: 2, c: 3, d: 4, _f: 5 }
+      }, opts), ['a', 'b', 'c', 'd', '_f']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k.startsWith("_f"))', {
+        Object,
+        states: { a: 1, b: 2, c: 3, d: 4, _f: 5 }
+      }, opts), ['_f']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k !== "c" && !k.startsWith("_f"))', {
+        Object,
+        states: { a: 1, b: 2, c: 3, d: 4, _f: 5 }
+      }, opts), ['a', 'b', 'd']);
+
+      assert.deepEqual(await e('Object.keys(states).filter(k => k !== "c" && !k.startsWith("_f"))', {
+        Object,
+        states: { a: 1, b: 2, c: 3, _f: 4 }
+      }, opts), ['a', 'b']);
+    });
   });
 
   describe('OptionalCallExpression', () => {

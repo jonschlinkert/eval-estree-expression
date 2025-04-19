@@ -71,3 +71,4 @@ vendor
 .chat
 *.generated.*
 *.updated.*
+issues.md

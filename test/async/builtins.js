@@ -37,6 +37,11 @@ describe('built in objects', () => {
     assert.deepEqual(await e('Number(1)', { Number }, opts), 1);
   });
 
+  it('should evaluate Object', async () => {
+    assert.deepEqual(await e('Object.keys(foo)', { Object, foo: { a: 1, b: 1 } }, opts), ['a', 'b']);
+    assert.deepEqual(await e('Object.create(null)', { Object }, opts), Object.create(null));
+  });
+
   it('should evaluate parseFloat', async () => {
     assert.deepEqual(await e('parseFloat("1.1b")', { parseFloat }, opts), 1.1);
     assert.deepEqual(await e('parseFloat("1.0b")', { parseFloat }, opts), 1);

@@ -112,6 +112,15 @@ describe('evaluate', () => {
       assert.equal(await e('-a.b.c', context), -10);
     });
 
+    it('should return void', async () => {
+      assert.equal(await e('void 1'), undefined);
+      assert.equal(await e('void "1"'), undefined);
+      assert.equal(await e('void null'), undefined);
+      assert.equal(await e('void "null"'), undefined);
+      assert.equal(await e('void true'), undefined);
+      assert.equal(await e('void false'), undefined);
+    });
+
     it('should return the type of value', async () => {
       assert.equal(await e('typeof 1'), 'number');
       assert.equal(await e('typeof "1"'), 'string');
