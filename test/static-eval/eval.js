@@ -55,6 +55,12 @@ describe('eval', () => {
       assert.deepEqual(evaluate.sync(ast, {}, opts), [2, 4, 6]);
     });
 
+    it('array methods with members', () => {
+      const src = '[ { value: 1 }, { value: 2 }, { value: 3 }].map(function(n) { return n.value * 2 })';
+      const ast = parse(src).body[0].expression;
+      assert.deepEqual(evaluate.sync(ast, {}, opts), [2, 4, 6]);
+    });
+
     it('array methods invocation count', () => {
       const variables = { values: [1, 2, 3], receiver: [] };
       const src = 'values.forEach(function(x) { receiver.push(x); })';
