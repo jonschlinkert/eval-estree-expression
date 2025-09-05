@@ -14,6 +14,7 @@ Please consider following this project's author, [Jon Schlinkert](https://github
   * [.variables](#variables)
 - [Options](#options)
   * [booleanLogicalOperators](#booleanlogicaloperators)
+  * [budget](#budget)
   * [functions](#functions)
   * [Top-Level await](#top-level-await)
   * [generate](#generate)
@@ -162,6 +163,25 @@ console.log(await evaluate(parse('a || b'), { a: false, b: null }, options)); //
 console.log(await evaluate(parse('a && b'), { a: undefined, b: true }, options)); //=> false
 console.log(await evaluate(parse('a && b'), { a: undefined, b: false }, options)); //=> false
 console.log(await evaluate(parse('a || b'), { a: false, b: undefined }, options)); //=> false
+```
+
+### budget
+
+Type: `number`
+Default: `undefined`
+
+Limit the complexity of an expression by capping the number of AST node visits during evaluation. When the budget is exceeded, evaluation throws a `RangeError` with the message `Expression complexity budget exceeded`.
+
+```js
+// Allows up to 1 node visit (the NumericLiteral)
+console.log(evaluate.sync(parse('1'), {}, { budget: 1 })); //=> 1
+
+// Exceeds budget: BinaryExpression + two NumericLiterals = 3 visits
+try {
+  evaluate.sync(parse('1 + 2'), {}, { budget: 2 });
+} catch (err) {
+  console.log(err.message); //=> 'Expression complexity budget exceeded'
+}
 ```
 
 ### functions
