@@ -4,7 +4,12 @@ const assert = require('node:assert/strict');
 const { evaluate: e } = require('../support');
 const { generate } = require('escodegen');
 
-const opts = { functions: true, generate, strict: false };
+const opts = {
+  functions: true,
+  generate,
+  generator: 'escodegen',
+  strict: false
+};
 
 describe('expressions', () => {
   describe('ObjectExpression', () => {
