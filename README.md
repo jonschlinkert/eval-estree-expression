@@ -370,7 +370,7 @@ You might also be interested in these projects:
 
 | **Commits** | **Contributor** |  
 | --- | --- |  
-| 48 | [jonschlinkert](https://github.com/jonschlinkert) |  
+| 49 | [jonschlinkert](https://github.com/jonschlinkert) |  
 | 1  | [SamyPesse](https://github.com/SamyPesse) |  
 | 1  | [6utt3rfly](https://github.com/6utt3rfly) |  
 | 1  | [freshgum-bubbles](https://github.com/freshgum-bubbles) |  

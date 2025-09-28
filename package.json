@@ -1,7 +1,7 @@
 {
   "name": "eval-estree-expression",
   "description": "Safely evaluate JavaScript (estree) expressions, sync and async.",
-  "version": "3.0.1",
+  "version": "4.0.0-beta",
   "license": "MIT",
   "homepage": "https://github.com/jonschlinkert/eval-estree-expression",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
@@ -15,19 +15,23 @@
     "lib"
   ],
   "scripts": {
-    "test": "mocha --recursive --ignore 'test/fixtures/**'",
+    "test": "mocha --recursive --ignore 'test/fixtures/**/*.test.js'",
     "test:ci": "nyc --reporter=lcov npm run test",
     "cover": "nyc --reporter=text --reporter=html npm run test"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.26.5",
     "@babel/eslint-plugin": "^7.25.9",
+    "@babel/generator": "^7.28.0",
     "@babel/parser": "^7.26.7",
     "escodegen": "^2.1.0",
+    "eslint": "8.57.1",
+    "get-value": "^4.0.1",
     "gulp-format-md": "^2.0.0",
     "mocha": "^11.1.0",
     "nyc": "^17.1.0",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "set-value": "^4.1.0"
   },
   "keywords": [
     "@babel",
@@ -58,12 +62,18 @@
     "parse",
     "parser",
     "parsing",
+    "resolve",
+    "resolver",
+    "render",
+    "compile",
     "run",
     "safe",
     "safe-eval",
     "static",
     "syntax",
     "tc39",
+    "template",
+    "templates",
     "transpile",
     "transpiler",
     "tree"
