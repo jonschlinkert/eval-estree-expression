@@ -41,6 +41,25 @@ describe('expressions', () => {
       assert.deepEqual(e.sync('[1, 2, 3].map(n => n * x)', { x: 2 }, opts), [2, 4, 6]);
     });
 
+    it('array methods with nested object', () => {
+      const data = {
+        products: [
+          { name: 'Widget A', price: 10, quantity: 2 },
+          { name: 'Widget B', price: 15.5, quantity: 1 },
+          { name: 'Widget C', price: 5.25, quantity: 4 }
+        ]
+      };
+
+      const expression = 'inputs.products.map(p => ({ product: p.name, total: p.price * p.quantity }))';
+      const expected = [
+        { product: 'Widget A', total: 20 },
+        { product: 'Widget B', total: 15.5 },
+        { product: 'Widget C', total: 21 }
+      ];
+
+      assert.deepEqual(e.sync(expression, { inputs: data }, opts), expected);
+    });
+
     it('immediately invoked fat arrow', () => {
       assert.deepEqual(e.sync('((a, b, c) => a + b + c)(x, y, z) ', { x: 1, y: 2, z: 3 }, opts), 6);
     });

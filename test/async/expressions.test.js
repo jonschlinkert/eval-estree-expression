@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { evaluate: e } = require('../support');
 const { generate } = require('escodegen');
 
-const opts = { functions: true, generate, strict: false };
+const opts = { functions: true, generate, strict: false, allowAwaitOutsideFunction: true };
 
 describe('expressions', () => {
   describe('ObjectExpression', () => {
@@ -89,6 +89,11 @@ describe('expressions', () => {
         Object,
         states: { a: 1, b: 2, c: 3, d: 4 }
       }, opts), ['a', 'b', 'c']);
+
+      // assert.deepEqual(await e('Object.keys(states.__proto__).filter(k => k != "d")', {
+      //   Object,
+      //   states: { a: 1, b: 2, c: 3, d: 4 }
+      // }, opts), ['a', 'b', 'c']);
 
       assert.deepEqual(await e('Object.keys(states).filter(k => k !== "c" && k !== "d")', {
         Object,

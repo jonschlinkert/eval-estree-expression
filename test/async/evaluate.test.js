@@ -4,8 +4,8 @@ const { strict: assert } = require('assert');
 const { evaluate } = require('../support');
 
 const opts = { functions: true, allowAwaitOutsideFunction: true };
-const e = (input, context, options) => evaluate(input, context, { ...opts, ...options });
-e.sync = (input, context, options) => evaluate.sync(input, context, { ...opts, ...options });
+const e = (input, data, options) => evaluate(input, data, { ...opts, ...options });
+e.sync = (input, data, options) => evaluate.sync(input, data, { ...opts, ...options });
 
 describe('evaluate', () => {
   describe('async', async () => {
@@ -243,6 +243,16 @@ describe('evaluate', () => {
       assert.equal(await e('string || focused.editable', context), true);
       assert.equal(await e('string && focused.editable', context), false);
       assert.equal(await e('!!(string && focused.editable)', context), false);
+    });
+
+    describe('objects', () => {
+      it('should return object literals', async () => {
+        assert.deepEqual(await e('({ p })', { p: 'item_' }), { p: 'item_' });
+        assert.deepEqual(await e('({ p: p })', { p: 'item_' }), { p: 'item_' });
+        assert.deepEqual(await e('({ a: 1, b: 2 })'), { a: 1, b: 2 });
+        assert.deepEqual(await e('({ a: 1, b: { c: 3 } })'), { a: 1, b: { c: 3 } });
+        assert.deepEqual(await e('({ a: 1, b: { c: { d: 4 } } })'), { a: 1, b: { c: { d: 4 } } });
+      });
     });
   });
 

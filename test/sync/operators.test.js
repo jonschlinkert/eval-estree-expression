@@ -1,9 +1,34 @@
 'use strict';
 
 const assert = require('node:assert/strict');
-const { evaluate: e } = require('../support');
+const { evaluate: e, expression } = require('../support');
 
-describe('operators', () => {
+describe('operators (sync)', () => {
+  describe('performance', () => {
+    it('should evaluate 10,000 times', () => {
+      const start = Date.now();
+
+      for (let i = 0; i < 10_000; i++) {
+        e.sync('2 / 1 * 4 / 2');
+      }
+
+      const end = Date.now();
+      assert.ok(end - start < 500, 'Performance test failed');
+    });
+
+    it('should pre-parse and evaluate 10,000 times', () => {
+      const start = Date.now();
+      const exp = expression.sync('2 / 1 * 4 / 2');
+
+      for (let i = 0; i < 10_000; i++) {
+        exp('2 / 1 * 4 / 2');
+      }
+
+      const end = Date.now();
+      assert.ok(end - start < 500, 'Performance test failed');
+    });
+  });
+
   describe('regex operator', () => {
     it('should evaluate custom regex operator for matching without functions', () => {
       assert.ok(e.sync('name =~ /^a.*c$/', { name: 'abc' }));

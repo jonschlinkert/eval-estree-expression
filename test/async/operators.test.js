@@ -1,9 +1,34 @@
 'use strict';
 
 const assert = require('node:assert/strict');
-const { evaluate: e } = require('../support');
+const { evaluate: e, expression } = require('../support');
 
-describe('operators', () => {
+describe('operators (async)', () => {
+  describe('performance', () => {
+    it('should evaluate 1,000 times', async () => {
+      const start = Date.now();
+
+      for (let i = 0; i < 1000; i++) {
+        await e('2 / 1 * 4 / 2');
+      }
+
+      const end = Date.now();
+      assert.ok(end - start < 100, 'Performance test failed');
+    });
+
+    it('should pre-parse and evaluate 1,000 times', async () => {
+      const start = Date.now();
+      const exp = expression('2 / 1 * 4 / 2');
+
+      for (let i = 0; i < 1000; i++) {
+        await exp('2 / 1 * 4 / 2');
+      }
+
+      const end = Date.now();
+      assert.ok(end - start < 100, 'Performance test failed');
+    });
+  });
+
   describe('grouping operators', () => {
     it('should evaluate grouping operators', async () => {
       assert.equal(await e('2 / 1 * 4 / 2'), 4);
@@ -188,8 +213,8 @@ describe('operators', () => {
       assert.equal(await e('v === undefined', { v: 1 }), false);
       assert.equal(await e('v === undefined', { v: null }), false);
       assert.equal(await e('v === undefined', { v: undefined }), true);
-      assert.equal(await e('v === undefined', { v: 1, undefined: 1 }), false);
       assert.equal(await e('v === undefined'), true);
+      assert.equal(await e('v === undefined', { v: 1, undefined: 1 }), false);
 
       assert.equal(await e('a.b === undefined', { a: { b: null } }), false);
       assert.equal(await e('a.b === undefined', { a: { b: undefined } }), true);

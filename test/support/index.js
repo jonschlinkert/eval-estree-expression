@@ -7,13 +7,12 @@ const { evaluate, variables } = require('../..');
 
 exports.parse = (source, options = {}) => {
   if (typeof source === 'string') {
-    const opts = { ...options };
-    // const input = (opts.notExpression || opts.booleanLogicalOperators)
-    //   ? Lexer.toString(source)
-    //   : source;
+    if (source?.trim().startsWith('for ')) {
+      const ast = babel.parse(source, { ...options });
+      return ast.program.body[0];
+    }
 
-    const input = source;
-    const ast = babel.parseExpression(input, opts);
+    const ast = babel.parseExpression(source, { ...options });
     return ast;
   }
 
