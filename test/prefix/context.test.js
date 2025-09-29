@@ -19,6 +19,16 @@ const e = (input, context, options) => {
 };
 
 describe('context', () => {
+  it('should handle computed property access', async () => {
+    const context = {
+      data: { foo: 'bar', baz: 'qux' },
+      key: 'foo'
+    };
+
+    assert.equal(await e('data[key]', context), 'bar');
+    assert.equal(await e('data["baz"]', context), 'qux');
+  });
+
   it('should support Context instance', async () => {
     const context = new Context({ Array, p: 'item_', numbers: [1, 2, 3], count: 2 }, { prefix: '__data' });
 
