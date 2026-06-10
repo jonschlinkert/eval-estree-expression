@@ -1,7 +1,7 @@
 {
   "name": "eval-estree-expression",
   "description": "Safely evaluate JavaScript (estree) expressions, sync and async.",
-  "version": "4.0.0-beta-1",
+  "version": "4.0.0-beta-2",
   "license": "MIT",
   "homepage": "https://github.com/jonschlinkert/eval-estree-expression",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
@@ -19,6 +19,9 @@
     "test:ci": "nyc --reporter=lcov npm run test",
     "cover": "nyc --reporter=text --reporter=html npm run test"
   },
+  "dependencies": {
+    "get-value": "^4.0.1"
+  },
   "devDependencies": {
     "@babel/eslint-parser": "^7.26.5",
     "@babel/eslint-plugin": "^7.25.9",
@@ -26,7 +29,6 @@
     "@babel/parser": "^7.26.7",
     "escodegen": "^2.1.0",
     "eslint": "8.57.1",
-    "get-value": "^4.0.1",
     "gulp-format-md": "^2.0.0",
     "mocha": "^11.1.0",
     "nyc": "^17.1.0",
@@ -42,13 +44,14 @@
     "ast",
     "babel",
     "babel-cli",
+    "compile",
     "compiler",
     "context",
     "ecma",
     "ecmascript",
     "es6",
-    "estree",
     "esprima",
+    "estree",
     "eval",
     "evaluate",
     "expr-eval",
@@ -62,10 +65,9 @@
     "parse",
     "parser",
     "parsing",
+    "render",
     "resolve",
     "resolver",
-    "render",
-    "compile",
     "run",
     "safe",
     "safe-eval",
@@ -95,7 +97,11 @@
     "reflinks": [
       "acorn",
       "escodegen",
-      "esprima"
+      "esprima",
+      "a-z",
+      "esprimar",
+      "verb",
+      "verb-generate-readme"
     ],
     "lint": {
       "reflinks": true
