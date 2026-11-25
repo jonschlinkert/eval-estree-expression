@@ -395,6 +395,22 @@ describe('operators (sync)', () => {
   });
 
   describe('optional chaining operators', () => {
+    it('should read optional members by string and numeric keys', () => {
+      assert.equal(e.sync('settings?.["theme"]', { settings: { theme: 'dark' } }), 'dark');
+      assert.equal(e.sync('items?.[1]', { items: ['a', 'b'] }), 'b');
+    });
+
+    it('should resolve computed keys in the expression context', () => {
+      const settings = { key: 'other', theme: 'dark' };
+      assert.equal(e.sync('settings?.[key]', { settings, key: 'theme' }), 'dark');
+    });
+
+    it('should skip the computed key for a nullish object', () => {
+      const context = { user: null, key: () => assert.fail('unexpected key lookup') };
+      assert.equal(e.sync('user?.[key()]', context), undefined);
+      assert.equal(e.sync('user?.["name"]', { user: undefined }), undefined);
+    });
+
     it('should evaluate optional chaining operator', () => {
       assert.equal(e.sync('a?.b'), undefined);
       assert.equal(e.sync('a?.b?.c'), undefined);

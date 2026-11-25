@@ -336,6 +336,27 @@ describe('operators (async)', () => {
   });
 
   describe('optional chaining operators', () => {
+    it('should read optional members by string and numeric keys', async () => {
+      assert.equal(await e('settings?.["theme"]', { settings: { theme: 'dark' } }), 'dark');
+      assert.equal(await e('items?.[1]', { items: ['a', 'b'] }), 'b');
+    });
+
+    it('should resolve computed keys in the expression context', async () => {
+      const settings = { key: 'other', theme: 'dark' };
+      assert.equal(await e('settings?.[key]', { settings, key: 'theme' }), 'dark');
+    });
+
+    it('should skip the computed key for a nullish object', async () => {
+      const context = { user: null, key: () => assert.fail('unexpected key lookup') };
+      assert.equal(await e('user?.[key()]', context), undefined);
+      assert.equal(await e('user?.["name"]', { user: undefined }), undefined);
+    });
+
+    it('should resolve a promised object and computed key', async () => {
+      const context = { settings: Promise.resolve({ theme: 'dark' }), key: Promise.resolve('theme') };
+      assert.equal(await e('settings?.[key]', context), 'dark');
+    });
+
     it('should evaluate optional chaining operator', async () => {
       assert.equal(await e('a?.b'), undefined);
       assert.equal(await e('a?.b?.c'), undefined);
