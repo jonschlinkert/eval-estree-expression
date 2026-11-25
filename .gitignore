@@ -72,3 +72,5 @@ vendor
 *.generated.*
 *.updated.*
 issues.md
+
+*.command.ts

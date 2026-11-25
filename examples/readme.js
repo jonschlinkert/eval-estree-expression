@@ -16,7 +16,6 @@ const parse = input => babel.parseExpression(input);
   console.log(await evaluate(parse('1 > 2'))); //=> false
   console.log(await evaluate(parse('1 < 2'))); //=> true
 
-
   console.log(await evaluate(parse('page.title === "home"'), { page: { title: 'home' } })); //=> true
 
   const options = { booleanLogicalOperators: true };

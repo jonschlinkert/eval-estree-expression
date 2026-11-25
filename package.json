@@ -1,7 +1,7 @@
 {
   "name": "eval-estree-expression",
   "description": "Safely evaluate JavaScript (estree) expressions, sync and async.",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "license": "MIT",
   "homepage": "https://github.com/jonschlinkert/eval-estree-expression",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
@@ -15,24 +15,25 @@
     "lib"
   ],
   "scripts": {
+    "cover": "nyc --reporter=text --reporter=html npm run test",
+    "eslint": "npx eslint .",
     "test": "mocha --recursive --ignore 'test/fixtures/**/*.test.js'",
-    "test:ci": "nyc --reporter=lcov npm run test",
-    "cover": "nyc --reporter=text --reporter=html npm run test"
+    "test:ci": "nyc --reporter=lcov npm run test"
   },
   "dependencies": {
-    "get-value": "^4.0.1"
+    "get-value": "4.1.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.26.5",
-    "@babel/eslint-plugin": "^7.25.9",
-    "@babel/generator": "^7.28.0",
-    "@babel/parser": "^7.26.7",
+    "@babel/eslint-parser": "8.1.2",
+    "@babel/eslint-plugin": "8.1.0",
+    "@babel/generator": "8.1.3",
+    "@babel/parser": "8.1.3",
     "escodegen": "^2.1.0",
     "eslint": "8.57.1",
     "gulp-format-md": "^2.0.0",
-    "mocha": "^11.1.0",
-    "nyc": "^17.1.0",
-    "prettier": "^3.4.2",
+    "mocha": "12.0.3",
+    "nyc": "18.0.0",
+    "prettier": "3.10.1",
     "set-value": "^4.1.0"
   },
   "keywords": [
